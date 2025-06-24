@@ -1,4 +1,10 @@
 streamlit
+python-dotenv
 google-cloud-storage
 openai
 pandas
+aiohttp
+tqdm
+Pillow
+requests
+
