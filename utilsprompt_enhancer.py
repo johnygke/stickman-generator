@@ -28,13 +28,18 @@ def enhance_prompt(original_prompt: str, category: str = "mental health") -> str
     """
 
     try:
-        response = openai.ChatCompletion.create(
-            model="gpt-4o",
-            messages=[
-                {"role": "system", "content": system_message},
-                {"role": "user", "content": user_message},
-            ],
-            temperature=0.7,
+        from openai import OpenAI
+
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+response = client.chat.completions.create(
+    model="gpt-4o",
+    messages=[
+        {"role": "system", "content": "You are an expert visual prompt enhancer."},
+        {"role": "user", "content": enhancement_prompt}
+    ],
+    temperature=0.7
+)
         )
         enhanced = response.choices[0].message["content"].strip()
         return enhanced
