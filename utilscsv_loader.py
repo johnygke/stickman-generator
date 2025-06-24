@@ -1,31 +1,17 @@
-# /utils/csv_loader.py
-import csv
-import os
+# utils/csv_loader.py
+import pandas as pd
+import streamlit as st
 
-def load_csv_prompts(csv_path, max_rows=None):
-    """
-    Loads prompts from a CSV file with structure: ID,Original Prompt,Category
+REQUIRED_COLUMNS = ['ID', 'Original_Prompt', 'Scene_Category', 'Mood_Tone', 'Story_Arc']
 
-    Args:
-        csv_path (str): Path to the CSV file.
-        max_rows (int): Maximum number of rows to load.
-
-    Returns:
-        list[dict]: List of dictionaries with keys: id, prompt, category.
-    """
-    if not os.path.exists(csv_path):
-        raise FileNotFoundError(f"CSV file not found: {csv_path}")
-
-    prompts = []
-    with open(csv_path, newline='', encoding='utf-8') as csvfile:
-        reader = csv.DictReader(csvfile)
-        for i, row in enumerate(reader):
-            if max_rows and i >= max_rows:
-                break
-            prompts.append({
-                "id": row["ID"].strip(),
-                "prompt": row["Original Prompt"].strip(),
-                "category": row["Category"].strip().lower().replace(" ", "_")
-            })
-
-    return prompts
+def load_and_preview_csv(uploaded_file):
+    try:
+        df = pd.read_csv(uploaded_file)
+        missing_cols = [col for col in REQUIRED_COLUMNS if col not in df.columns]
+        if missing_cols:
+            st.error(f"❌ Missing required columns: {', '.join(missing_cols)}")
+            return pd.DataFrame()
+        return df
+    except Exception as e:
+        st.error(f"❌ Failed to load CSV: {e}")
+        return pd.DataFrame()
